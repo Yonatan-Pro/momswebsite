@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Double Redemption / הגאולה הכפולה</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -13,7 +18,7 @@
     <div class="splash-overlay" id="splash-screen">
         <div class="splash-modal">
             
-            <!-- Step 1: Language (Now First) -->
+            <!-- Step 1: Language -->
             <div id="step-language" class="step-container active">
                 <h2>Language / שפה / Язык</h2>
                 <p>Select your website language:</p>
@@ -24,13 +29,14 @@
                 </div>
             </div>
 
-            <!-- Step 2: Location (Now Second, translates automatically) -->
+            <!-- Step 2: Location -->
             <div id="step-location" class="step-container">
                 <h2 id="splash-loc-title">Welcome</h2>
                 <p id="splash-loc-sub">Where are you ordering from?</p>
                 <div class="button-group">
                     <button class="primary-btn" id="splash-btn-il" onclick="setRegion('Israel')">Israel</button>
                     <button class="primary-btn" id="splash-btn-us" onclick="setRegion('USA')">United States</button>
+                    <button id="splash-reviews-btn" class="secondary-btn" onclick="openReviewsModal()" style="margin-top: 10px;">Read Reviews</button>
                 </div>
             </div>
 
@@ -60,9 +66,7 @@
                     <h1 id="book-title">The Double Redemption / הגאולה הכפולה</h1>
                 </div>
 
-                <!-- Live Description Area -->
-                <div class="custom-description-area" id="desc-placeholder">
-                </div>
+                <div class="custom-description-area" id="desc-placeholder"></div>
 
                 <!-- Pricing & Order Card -->
                 <div class="pricing-card">
@@ -75,7 +79,6 @@
                     <h3 id="price-label" style="margin-top: 30px;">Price</h3>
                     <div class="price-display" id="final-price">--</div>
                     
-                    <!-- New Order Form Area -->
                     <div class="order-form">
                         <input type="text" id="buyer-name" class="form-input" placeholder="Full Name" required>
                         <input type="tel" id="buyer-phone" class="form-input" placeholder="Phone Number" required>
@@ -91,6 +94,45 @@
 
                     <button class="add-to-cart" id="add-cart-btn" onclick="submitOrder()">Place Order</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Modal -->
+    <div class="splash-overlay" id="reviews-modal" style="display: none; opacity: 0; z-index: 1005;">
+        <div class="splash-modal" style="max-height: 85vh; overflow-y: auto; position: relative;">
+            <button onclick="closeReviewsModal()" class="close-modal-btn">&times;</button>
+            
+            <h2 id="reviews-title-text" style="margin-bottom: 20px;">Customer Reviews</h2>
+            
+            <div id="reviews-list" style="text-align: left; margin-bottom: 25px;">
+                <!-- Live Firestore reviews load here -->
+            </div>
+
+            <div style="border-top: 2px dashed #d4c8b3; padding-top: 20px; text-align: left;">
+                <h3 id="add-review-title" style="margin-bottom: 15px;">Add a Review</h3>
+                <input type="text" id="review-name" class="form-input" placeholder="Your Name" style="margin-bottom: 10px;">
+                <select id="review-stars" class="form-input" style="margin-bottom: 10px; cursor: pointer;">
+                    <option value="5">★★★★★ (5 Stars)</option>
+                    <option value="4">★★★★☆ (4 Stars)</option>
+                    <option value="3">★★★☆☆ (3 Stars)</option>
+                    <option value="2">★★☆☆☆ (2 Stars)</option>
+                    <option value="1">★☆☆☆☆ (1 Star)</option>
+                </select>
+                <textarea id="review-text" class="form-input" placeholder="Write your review here..." rows="3"></textarea>
+                <button class="primary-btn" id="submit-review-btn" onclick="submitReview()" style="width: 100%;">Submit Review</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thank You Modal -->
+    <div class="splash-overlay" id="thank-you-screen" style="display: none; opacity: 0; z-index: 1005;">
+        <div class="splash-modal">
+            <h2 id="ty-title-text" style="margin-bottom: 10px; font-size: 2.2em; color: #8b7355;">Thank You!</h2>
+            <p id="ty-msg-text" style="font-size: 1.2em; margin-bottom: 25px;">Your order has been placed successfully.</p>
+            <div class="button-group">
+                <button class="primary-btn" id="ty-review-btn" onclick="openReviewFromThankYou()">Leave a Review</button>
+                <button class="secondary-btn" id="ty-close-btn" onclick="closeThankYouScreen()">Back to Store</button>
             </div>
         </div>
     </div>
