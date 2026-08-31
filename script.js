@@ -3,25 +3,15 @@ const ORDER_WEBHOOK_URL_IL = "https://formspree.io/f/xbgrwoay";
 const ORDER_WEBHOOK_URL_US = "https://formspree.io/f/xkjwkvly";
 
 // --- FIREBASE CONFIGURATION ---
-// Replace the values below with your credentials from the Firebase Console
 const firebaseConfig = {
-
-  apiKey: "AIzaSyB4KgMmVovCiBAIE2PQ7xuGX1DjGjoEH6g",
-
-  authDomain: "double-redemption.firebaseapp.com",
-
-  projectId: "double-redemption",
-
-  storageBucket: "double-redemption.firebasestorage.app",
-
-  messagingSenderId: "664820211845",
-
-  appId: "1:664820211845:web:8e0a511f3e648d547549ec",
-
-  measurementId: "G-3XTBZTJ364"
-
+    apiKey: "AIzaSyB4KgMmVovCiBAIE2PQ7xuGX1DjGjoEH6g",
+    authDomain: "double-redemption.firebaseapp.com",
+    projectId: "double-redemption",
+    storageBucket: "double-redemption.firebasestorage.app",
+    messagingSenderId: "664820211845",
+    appId: "1:664820211845:web:8e0a511f3e648d547549ec",
+    measurementId: "G-3XTBZTJ364"
 };
-
 
 // Initialize Firebase & Firestore
 firebase.initializeApp(firebaseConfig);
@@ -58,8 +48,8 @@ const translations = {
         cashInst: "Pay in cash upon delivery/pickup.",
         bitInst: "Send <strong>80 ₪</strong> via Bit to: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
         zelleInst: "Send <strong>$40</strong> via Zelle to: <br><strong style='font-size:1.2em;'>+1 518 466 8854</strong><br>(Lika Yakovis)",
-        reviewsBtn: "Read Reviews",
-        reviewsTitle: "Customer Reviews",
+        reviewsBtn: "Reviews", 
+        reviewsTitle: "Reviews", // Changed here
         addReviewTitle: "Add a Review",
         revName: "Your Name",
         revText: "Write your review here...",
@@ -95,8 +85,8 @@ const translations = {
         cashInst: "התשלום במזומן בעת המסירה/האיסוף.",
         bitInst: "העבר <strong>80 ₪</strong> בביט למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+972 54-538-4137</span></strong>",
         zelleInst: "העבר <strong>$40</strong> ב-Zelle למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+1 518 466 8854</span></strong><br>(Lika Yakovis)",
-        reviewsBtn: "קרא ביקורות",
-        reviewsTitle: "ביקורות לקוחות",
+        reviewsBtn: "ביקורות", 
+        reviewsTitle: "ביקורות", // Changed here
         addReviewTitle: "הוסף ביקורת",
         revName: "השם שלך",
         revText: "כתוב את הביקורת שלך כאן...",
@@ -132,8 +122,8 @@ const translations = {
         cashInst: "Оплата наличными при доставке/самовывозе.",
         bitInst: "Отправьте <strong>80 ₪</strong> через Bit на номер: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
         zelleInst: "Отправьте <strong>$40</strong> через Zelle на номер: <br><strong style='font-size:1.2em;'>+1 518 466 8854</strong><br>(Lika Yakovis)",
-        reviewsBtn: "Читать отзывы",
-        reviewsTitle: "Отзывы клиентов",
+        reviewsBtn: "Отзывы", 
+        reviewsTitle: "Отзывы", // Changed here
         addReviewTitle: "Оставить отзыв",
         revName: "Ваше имя",
         revText: "Напишите свой отзыв здесь...",
@@ -308,7 +298,6 @@ async function renderReviews() {
             
             const translatedText = await translateText(review.text, userLanguage);
 
-            // Removed the delete button entirely for security
             return `
                 <div class="review-box">
                     <div class="review-header">
@@ -446,12 +435,10 @@ function submitOrder() {
     })
     .then(response => {
         if (response.ok) {
-            // Clear all fields
             document.getElementById('buyer-name').value = '';
             document.getElementById('buyer-phone').value = '';
             document.getElementById('buyer-address').value = '';
             
-            // Unhide the Thank You overlay
             const tyScreen = document.getElementById('thank-you-screen');
             tyScreen.style.display = 'flex';
             setTimeout(() => { tyScreen.style.opacity = '1'; }, 50);
