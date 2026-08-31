@@ -62,31 +62,6 @@ textarea.form-input { resize: vertical; }
 .pay-btn.active { background-color: #a36b5e; color: white; border-color: #a36b5e; }
 .payment-instructions { text-align: center; font-size: 1.1em; color: #5c4e3b; background: #ffffff; padding: 15px; border-radius: 6px; border: 1px dashed #d4c8b3; }
 
-/* --- Auto-Scrolling Reviews Marquee --- */
-.reviews-marquee { width: 100%; overflow: hidden; background-color: #8b7355; color: #f2efe6; padding: 12px 0; position: relative; box-shadow: inset 0 2px 5px rgba(0,0,0,0.15); margin-bottom: 30px; }
-.marquee-track { display: flex; width: max-content; animation: scroll-marquee 30s linear infinite; }
-.reviews-marquee:hover .marquee-track { animation-play-state: paused; }
-.review-item { font-size: 1.15em; font-style: italic; padding: 0 40px; letter-spacing: 0.5px; }
-
-@keyframes scroll-marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); } 
-}
-[dir="rtl"] .marquee-track { animation: scroll-marquee-rtl 30s linear infinite; }
-@keyframes scroll-marquee-rtl {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(50%); }
-}
-
-/* --- Mobile Responsive Fixes --- */
-@media (max-width: 768px) {
-    .store-grid { grid-template-columns: 1fr !important; gap: 25px !important; margin-top: 20px !important; }
-    .main-content { padding: 0 10px !important; margin: 20px auto !important; }
-    .splash-modal { width: 90% !important; padding: 30px 20px !important; }
-    header { padding: 12px 20px !important; }
-    .logo { font-size: 20px !important; }
-}
-
 /* --- Reviews Modal Styling --- */
 .close-modal-btn {
     position: absolute;
@@ -106,7 +81,7 @@ textarea.form-input { resize: vertical; }
     left: 20px;
 }
 
-/* The New "Card" Look for Reviews */
+/* Review Cards */
 .review-box {
     background-color: #ffffff;
     border: 1px solid #d4c8b3;
@@ -122,33 +97,52 @@ textarea.form-input { resize: vertical; }
     padding-bottom: 12px;
 }
 
-/* Stack the name and stars vertically so they have breathing room */
 .review-header div {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-/* Make the Name Stand Out */
 .review-author {
     font-family: 'Playfair Display', serif;
     font-weight: 700;
-    color: #8b7355; /* Matches your primary brand color */
-    font-size: 1.5em; /* Significantly larger */
+    color: #8b7355; 
+    font-size: 1.5em; 
     line-height: 1.1;
 }
 
-/* Separate the stars slightly */
 .review-stars {
     color: #d4af37;
     font-size: 1.15em;
     letter-spacing: 2px;
 }
 
-/* Style the actual review text to be highly readable */
 .review-box p {
     margin: 10px 0 0;
     font-size: 1.1em;
     line-height: 1.6;
     color: #433829;
+}
+
+/* --- Mobile Responsive Fixes --- */
+/* THIS MUST ALWAYS BE AT THE VERY BOTTOM OF THE FILE */
+@media (max-width: 768px) {
+    /* Store Layout Fixes */
+    .store-grid { grid-template-columns: 1fr !important; gap: 25px !important; margin-top: 20px !important; }
+    .main-content { padding: 0 10px !important; margin: 20px auto !important; }
+    header { padding: 12px 20px !important; }
+    .logo { font-size: 20px !important; }
+    
+    /* General Modal Fixes */
+    .splash-modal { width: 95% !important; padding: 25px 15px !important; }
+    
+    /* Reviews Modal Specific Fixes */
+    .review-box { padding: 15px !important; margin-bottom: 15px !important; }
+    .review-author { font-size: 1.25em !important; }
+    .review-stars { font-size: 1em !important; }
+    .review-box p { font-size: 1em !important; }
+    
+    /* Reposition Close Button for small screens */
+    .close-modal-btn { top: 10px !important; right: 15px !important; }
+    [dir="rtl"] .close-modal-btn { right: auto !important; left: 15px !important; }
 }
