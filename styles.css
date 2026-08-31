@@ -86,3 +86,69 @@ textarea.form-input { resize: vertical; }
     header { padding: 12px 20px !important; }
     .logo { font-size: 20px !important; }
 }
+
+/* --- Reviews Modal Styling --- */
+.close-modal-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 2em;
+    cursor: pointer;
+    color: #8b7355;
+    padding: 0;
+    line-height: 1;
+}
+
+[dir="rtl"] .close-modal-btn {
+    right: auto;
+    left: 20px;
+}
+
+/* The New "Card" Look for Reviews */
+.review-box {
+    background-color: #ffffff;
+    border: 1px solid #d4c8b3;
+    border-radius: 8px;
+    padding: 22px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 10px rgba(67, 56, 41, 0.05);
+}
+
+.review-header {
+    margin-bottom: 12px;
+    border-bottom: 1px solid #f2efe6;
+    padding-bottom: 12px;
+}
+
+/* Stack the name and stars vertically so they have breathing room */
+.review-header div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Make the Name Stand Out */
+.review-author {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: #8b7355; /* Matches your primary brand color */
+    font-size: 1.5em; /* Significantly larger */
+    line-height: 1.1;
+}
+
+/* Separate the stars slightly */
+.review-stars {
+    color: #d4af37;
+    font-size: 1.15em;
+    letter-spacing: 2px;
+}
+
+/* Style the actual review text to be highly readable */
+.review-box p {
+    margin: 10px 0 0;
+    font-size: 1.1em;
+    line-height: 1.6;
+    color: #433829;
+}
