@@ -22,6 +22,7 @@ let userRegion = '';
 let userLanguage = '';
 let selectedEdition = 'he'; 
 let selectedPayment = 'Cash';
+let selectedFulfillment = 'Delivery'; // 'Delivery' or 'Pickup'
 let liveReviews = [];
 
 const translations = {
@@ -41,15 +42,21 @@ const translations = {
         namePlaceholder: "Full Name",
         phonePlaceholder: "Phone Number",
         addressPlaceholder: "Delivery Address",
+        pickupPlaceholder: "Pickup (Address not required)",
         paymentLabel: "Payment Method:",
         cash: "Cash",
         cartBtn: "Place Order",
-        alertError: "Please fill out your name, phone number, and address before ordering.",
+        alertError: "Please fill out your name and phone number before ordering.",
+        alertErrorAddress: "Please enter your delivery address.",
         cashInst: "Pay in cash upon delivery/pickup.",
-        bitInst: "Send <strong>80 ₪</strong> via Bit to: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
+        bitInstDelivery: "Send <strong>102 ₪</strong> (80 ₪ + 22 ₪ delivery) via Bit to: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
+        bitInstPickup: "Send <strong>80 ₪</strong> via Bit to: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
         zelleInst: "Send <strong>$40</strong> via Zelle to: <br><strong style='font-size:1.2em;'>+1 518 466 8854</strong><br>(Lika Yakovis)",
+        fulfillmentLabel: "Delivery Option:",
+        btnDelivery: "Delivery (+22 ₪)",
+        btnPickup: "Self-Pickup (Free)",
         reviewsBtn: "Reviews", 
-        reviewsTitle: "Reviews", // Changed here
+        reviewsTitle: "Reviews",
         addReviewTitle: "Add a Review",
         revName: "Your Name",
         revText: "Write your review here...",
@@ -78,15 +85,21 @@ const translations = {
         namePlaceholder: "שם מלא",
         phonePlaceholder: "מספר טלפון",
         addressPlaceholder: "כתובת למשלוח",
+        pickupPlaceholder: "איסוף עצמי (אין צורך בכתובת)",
         paymentLabel: "אמצעי תשלום:",
         cash: "מזומן",
         cartBtn: "בצע הזמנה",
-        alertError: "אנא מלא/י שם, מספר טלפון וכתובת לפני ביצוע ההזמנה.",
+        alertError: "אנא מלא/י שם ומספר טלפון לפני ביצוע ההזמנה.",
+        alertErrorAddress: "אנא הזן/הזיני כתובת למשלוח.",
         cashInst: "התשלום במזומן בעת המסירה/האיסוף.",
-        bitInst: "העבר <strong>80 ₪</strong> בביט למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+972 54-538-4137</span></strong>",
+        bitInstDelivery: "העבר <strong>102 ₪</strong> (80 ₪ + 22 ₪ משלוח) בביט למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+972 54-538-4137</span></strong>",
+        bitInstPickup: "העבר <strong>80 ₪</strong> בביט למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+972 54-538-4137</span></strong>",
         zelleInst: "העבר <strong>$40</strong> ב-Zelle למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+1 518 466 8854</span></strong><br>(Lika Yakovis)",
+        fulfillmentLabel: "אפשרות קבלה:",
+        btnDelivery: "משלוח (22+ ₪)",
+        btnPickup: "איסוף עצמי (חינם)",
         reviewsBtn: "ביקורות", 
-        reviewsTitle: "ביקורות", // Changed here
+        reviewsTitle: "ביקורות",
         addReviewTitle: "הוסף ביקורת",
         revName: "השם שלך",
         revText: "כתוב את הביקורת שלך כאן...",
@@ -115,15 +128,21 @@ const translations = {
         namePlaceholder: "Полное Имя",
         phonePlaceholder: "Номер телефона",
         addressPlaceholder: "Адрес доставки",
+        pickupPlaceholder: "Самовывоз (адрес не требуется)",
         paymentLabel: "Способ оплаты:",
         cash: "Наличные",
         cartBtn: "Оформить заказ",
-        alertError: "Пожалуйста, введите ваше имя, телефон и адрес перед заказом.",
+        alertError: "Пожалуйста, введите ваше имя и телефон перед заказом.",
+        alertErrorAddress: "Пожалуйста, укажите адрес доставки.",
         cashInst: "Оплата наличными при доставке/самовывозе.",
-        bitInst: "Отправьте <strong>80 ₪</strong> через Bit на номер: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
+        bitInstDelivery: "Отправьте <strong>102 ₪</strong> (80 ₪ + 22 ₪ доставка) через Bit на номер: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
+        bitInstPickup: "Отправьте <strong>80 ₪</strong> через Bit на номер: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
         zelleInst: "Отправьте <strong>$40</strong> через Zelle на номер: <br><strong style='font-size:1.2em;'>+1 518 466 8854</strong><br>(Lika Yakovis)",
+        fulfillmentLabel: "Способ получения:",
+        btnDelivery: "Доставка (+22 ₪)",
+        btnPickup: "Самовывоз (Бесплатно)",
         reviewsBtn: "Отзывы", 
-        reviewsTitle: "Отзывы", // Changed here
+        reviewsTitle: "Отзывы",
         addReviewTitle: "Оставить отзыв",
         revName: "Ваше имя",
         revText: "Напишите свой отзыв здесь...",
@@ -146,30 +165,25 @@ function setLanguage(language) {
     document.documentElement.lang = language;
     document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
 
-    // Splash Screen 2 UI Translation
     document.getElementById('splash-loc-title').innerText = langObj.locTitle;
     document.getElementById('splash-loc-sub').innerText = langObj.locSub;
     document.getElementById('splash-btn-il').innerText = langObj.btnIl;
     document.getElementById('splash-btn-us').innerText = langObj.btnUs;
     document.getElementById('splash-reviews-btn').innerText = langObj.reviewsBtn;
 
-    // Review Modal Translation 
     document.getElementById('reviews-title-text').innerText = langObj.reviewsTitle;
     document.getElementById('add-review-title').innerText = langObj.addReviewTitle;
     document.getElementById('review-name').placeholder = langObj.revName;
     document.getElementById('review-text').placeholder = langObj.revText;
     document.getElementById('submit-review-btn').innerText = langObj.submitRevBtn;
 
-    // Thank You Screen UI Translation
     document.getElementById('ty-title-text').innerText = langObj.tyTitle;
     document.getElementById('ty-msg-text').innerText = langObj.tyMsg;
     document.getElementById('ty-review-btn').innerText = langObj.tyReviewBtn;
     document.getElementById('ty-close-btn').innerText = langObj.tyCloseBtn;
 
-    // Begin fetching and translating the actual reviews IMMEDIATELY 
     initLiveReviewsListener();
 
-    // Advance to Step 2
     const stepLang = document.getElementById('step-language');
     const stepLoc = document.getElementById('step-location');
     
@@ -185,15 +199,23 @@ function setRegion(region) {
     userRegion = region;
     const langObj = translations[userLanguage];
     
+    const fulfillmentBox = document.getElementById('fulfillment-container');
+
     if (region === 'Israel') {
-        document.getElementById('final-price').innerText = '80 ₪';
+        fulfillmentBox.style.display = 'block';
+        selectedFulfillment = 'Delivery';
         document.getElementById('pay-digital').innerText = 'Bit';
+        document.getElementById('fulfillment-label').innerText = langObj.fulfillmentLabel;
+        document.getElementById('btn-delivery').innerText = langObj.btnDelivery;
+        document.getElementById('btn-pickup').innerText = langObj.btnPickup;
+        selectFulfillment('Delivery');
     } else if (region === 'USA') {
+        fulfillmentBox.style.display = 'none';
         document.getElementById('final-price').innerText = '$40';
         document.getElementById('pay-digital').innerText = 'Zelle';
+        document.getElementById('buyer-address').placeholder = langObj.addressPlaceholder;
     }
 
-    // Translate Main Site Store UI
     document.getElementById('book-title').innerText = langObj.title;
     document.getElementById('desc-placeholder').innerHTML = langObj.description;
     document.getElementById('edition-label').innerText = langObj.editionLabel;
@@ -203,7 +225,6 @@ function setRegion(region) {
     
     document.getElementById('buyer-name').placeholder = langObj.namePlaceholder;
     document.getElementById('buyer-phone').placeholder = langObj.phonePlaceholder;
-    document.getElementById('buyer-address').placeholder = langObj.addressPlaceholder;
     
     document.getElementById('payment-label').innerText = langObj.paymentLabel;
     document.getElementById('pay-cash').innerText = langObj.cash;
@@ -211,13 +232,38 @@ function setRegion(region) {
 
     updatePaymentInstructions();
 
-    // Remove the splash screen
     const splashScreen = document.getElementById('splash-screen');
     splashScreen.style.opacity = '0';
     setTimeout(() => {
         splashScreen.style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
     }, 500);
+}
+
+// --- FULFILLMENT LOGIC (ISRAEL) ---
+function selectFulfillment(option) {
+    selectedFulfillment = option;
+    const langObj = translations[userLanguage];
+
+    const delBtn = document.getElementById('btn-delivery');
+    const pickBtn = document.getElementById('btn-pickup');
+    const addressInput = document.getElementById('buyer-address');
+
+    if (option === 'Delivery') {
+        delBtn.classList.add('active');
+        pickBtn.classList.remove('active');
+        document.getElementById('final-price').innerText = '102 ₪';
+        addressInput.placeholder = langObj.addressPlaceholder;
+        addressInput.disabled = false;
+    } else {
+        pickBtn.classList.add('active');
+        delBtn.classList.remove('active');
+        document.getElementById('final-price').innerText = '80 ₪';
+        addressInput.placeholder = langObj.pickupPlaceholder;
+        addressInput.disabled = false;
+    }
+
+    updatePaymentInstructions();
 }
 
 // --- THANK YOU SCREEN & REVIEW ROUTING ---
@@ -390,7 +436,7 @@ function updatePaymentInstructions() {
     if (selectedPayment === 'Cash') {
         box.innerHTML = langObj.cashInst;
     } else if (selectedPayment === 'Digital' && userRegion === 'Israel') {
-        box.innerHTML = langObj.bitInst;
+        box.innerHTML = selectedFulfillment === 'Delivery' ? langObj.bitInstDelivery : langObj.bitInstPickup;
     } else if (selectedPayment === 'Digital' && userRegion === 'USA') {
         box.innerHTML = langObj.zelleInst;
     }
@@ -407,22 +453,40 @@ function submitOrder() {
     const buyerAddress = document.getElementById('buyer-address').value.trim();
     const langObj = translations[userLanguage];
 
-    if (!buyerName || !buyerPhone || !buyerAddress) {
+    if (!buyerName || !buyerPhone) {
         alert(langObj.alertError);
         return;
     }
 
-    const actualPaymentMethod = selectedPayment === 'Cash' ? 'Cash' : (userRegion === 'Israel' ? 'Bit' : 'Zelle');
-    const actualEdition = selectedEdition === 'he' ? 'Hebrew' : 'Russian';
+    if ((userRegion === 'USA' || selectedFulfillment === 'Delivery') && !buyerAddress) {
+        alert(langObj.alertErrorAddress);
+        return;
+    }
+
+    // Translating internal values to Hebrew for the Formspree email payload
+    const actualPaymentMethod = selectedPayment === 'Cash' ? 'מזומן' : (userRegion === 'Israel' ? 'ביט' : 'Zelle');
+    const actualEdition = selectedEdition === 'he' ? 'עברית' : 'רוסית';
+    
+    let actualFulfillment;
+    if (userRegion === 'Israel') {
+        actualFulfillment = selectedFulfillment === 'Delivery' ? 'משלוח' : 'איסוף עצמי';
+    } else {
+        actualFulfillment = 'משלוח רגיל';
+    }
+
+    const actualRegion = userRegion === 'Israel' ? 'ישראל' : 'ארצות הברית';
+    const actualAddress = buyerAddress || 'איסוף עצמי (ללא כתובת משלוח)';
+
     const targetUrl = userRegion === 'Israel' ? ORDER_WEBHOOK_URL_IL : ORDER_WEBHOOK_URL_US;
 
     const payload = {
-        Customer_Name: buyerName,
-        Phone_Number: buyerPhone,
-        Delivery_Address: buyerAddress,
-        Shipping_Region: userRegion,
-        Book_Edition: actualEdition,
-        Payment_Method: actualPaymentMethod
+        "שם לקוח": buyerName,
+        "מספר טלפון": buyerPhone,
+        "אפשרות קבלה": actualFulfillment,
+        "כתובת למשלוח": actualAddress,
+        "אזור משלוח": actualRegion,
+        "מהדורת ספר": actualEdition,
+        "אמצעי תשלום": actualPaymentMethod
     };
 
     fetch(targetUrl, {

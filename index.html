@@ -36,7 +36,7 @@
                 <div class="button-group">
                     <button class="primary-btn" id="splash-btn-il" onclick="setRegion('Israel')">Israel</button>
                     <button class="primary-btn" id="splash-btn-us" onclick="setRegion('USA')">United States</button>
-                    <button id="splash-reviews-btn" class="secondary-btn" onclick="openReviewsModal()" style="margin-top: 10px;">Read Reviews</button>
+                    <button id="splash-reviews-btn" class="secondary-btn" onclick="openReviewsModal()" style="margin-top: 10px;">Reviews</button>
                 </div>
             </div>
 
@@ -76,7 +76,16 @@
                         <button class="edition-btn" id="btn-ru" onclick="selectEdition('ru')">Russian</button>
                     </div>
 
-                    <h3 id="price-label" style="margin-top: 30px;">Price</h3>
+                    <!-- Israel-Only Fulfillment Options -->
+                    <div id="fulfillment-container" style="display: none; margin-top: 25px;">
+                        <h4 id="fulfillment-label" style="color: #433829; margin: 0 0 10px 0; font-size: 1.1em;">Delivery Option:</h4>
+                        <div class="payment-options">
+                            <button class="pay-btn active" id="btn-delivery" onclick="selectFulfillment('Delivery')">Delivery (+22 ₪)</button>
+                            <button class="pay-btn" id="btn-pickup" onclick="selectFulfillment('Pickup')">Self-Pickup (Free)</button>
+                        </div>
+                    </div>
+
+                    <h3 id="price-label" style="margin-top: 25px;">Price</h3>
                     <div class="price-display" id="final-price">--</div>
                     
                     <div class="order-form">
@@ -103,7 +112,7 @@
         <div class="splash-modal" style="max-height: 85vh; overflow-y: auto; position: relative;">
             <button onclick="closeReviewsModal()" class="close-modal-btn">&times;</button>
             
-            <h2 id="reviews-title-text" style="margin-bottom: 20px;">Customer Reviews</h2>
+            <h2 id="reviews-title-text" style="margin-bottom: 20px;">Reviews</h2>
             
             <div id="reviews-list" style="text-align: left; margin-bottom: 25px;">
                 <!-- Live Firestore reviews load here -->
