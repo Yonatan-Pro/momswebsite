@@ -52,6 +52,7 @@ const translations = {
         bitInstDelivery: "Send <strong>102 ₪</strong> (80 ₪ + 22 ₪ delivery) via Bit to: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
         bitInstPickup: "Send <strong>80 ₪</strong> via Bit to: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
         zelleInst: "Send <strong>$40</strong> via Zelle to: <br><strong style='font-size:1.2em;'>+1 518 466 8854</strong><br>(Lika Yakovis)",
+        paypalInst: "Send <strong>$40</strong> via PayPal to: <br><strong style='font-size:1.2em;'>IamWebDev@gmail.com</strong><br>(Alexandr Yakovis)",
         fulfillmentLabel: "Delivery Option:",
         btnDelivery: "Delivery (+22 ₪)",
         btnPickup: "Self-Pickup (Free)",
@@ -95,6 +96,7 @@ const translations = {
         bitInstDelivery: "העבר <strong>102 ₪</strong> (80 ₪ + 22 ₪ משלוח) בביט למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+972 54-538-4137</span></strong>",
         bitInstPickup: "העבר <strong>80 ₪</strong> בביט למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+972 54-538-4137</span></strong>",
         zelleInst: "העבר <strong>$40</strong> ב-Zelle למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+1 518 466 8854</span></strong><br>(Lika Yakovis)",
+        paypalInst: "העבר <strong>$40</strong> ב-PayPal לאימייל: <br><strong style='font-size:1.2em;'><span dir='ltr'>IamWebDev@gmail.com</span></strong><br>(Alexandr Yakovis)",
         fulfillmentLabel: "אפשרות קבלה:",
         btnDelivery: "משלוח (22+ ₪)",
         btnPickup: "איסוף עצמי (חינם)",
@@ -138,6 +140,7 @@ const translations = {
         bitInstDelivery: "Отправьте <strong>102 ₪</strong> (80 ₪ + 22 ₪ доставка) через Bit на номер: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
         bitInstPickup: "Отправьте <strong>80 ₪</strong> через Bit на номер: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
         zelleInst: "Отправьте <strong>$40</strong> через Zelle на номер: <br><strong style='font-size:1.2em;'>+1 518 466 8854</strong><br>(Lika Yakovis)",
+        paypalInst: "Отправьте <strong>$40</strong> через PayPal на почту: <br><strong style='font-size:1.2em;'>IamWebDev@gmail.com</strong><br>(Alexandr Yakovis)",
         fulfillmentLabel: "Способ получения:",
         btnDelivery: "Доставка (+22 ₪)",
         btnPickup: "Самовывоз (Бесплатно)",
@@ -200,9 +203,11 @@ function setRegion(region) {
     const langObj = translations[userLanguage];
     
     const fulfillmentBox = document.getElementById('fulfillment-container');
+    const paypalBtn = document.getElementById('pay-paypal');
 
     if (region === 'Israel') {
         fulfillmentBox.style.display = 'block';
+        paypalBtn.style.display = 'none';
         selectedFulfillment = 'Delivery';
         document.getElementById('pay-digital').innerText = 'Bit';
         document.getElementById('fulfillment-label').innerText = langObj.fulfillmentLabel;
@@ -211,6 +216,7 @@ function setRegion(region) {
         selectFulfillment('Delivery');
     } else if (region === 'USA') {
         fulfillmentBox.style.display = 'none';
+        paypalBtn.style.display = 'inline-block';
         document.getElementById('final-price').innerText = '$40';
         document.getElementById('pay-digital').innerText = 'Zelle';
         document.getElementById('buyer-address').placeholder = langObj.addressPlaceholder;
@@ -230,7 +236,7 @@ function setRegion(region) {
     document.getElementById('pay-cash').innerText = langObj.cash;
     document.getElementById('add-cart-btn').innerText = langObj.cartBtn;
 
-    updatePaymentInstructions();
+    selectPayment('Cash');
 
     const splashScreen = document.getElementById('splash-screen');
     splashScreen.style.opacity = '0';
@@ -422,9 +428,12 @@ function selectPayment(method) {
     selectedPayment = method;
     document.getElementById('pay-cash').classList.remove('active');
     document.getElementById('pay-digital').classList.remove('active');
+    const paypalBtn = document.getElementById('pay-paypal');
+    if (paypalBtn) paypalBtn.classList.remove('active');
     
     if (method === 'Cash') document.getElementById('pay-cash').classList.add('active');
     if (method === 'Digital') document.getElementById('pay-digital').classList.add('active');
+    if (method === 'PayPal' && paypalBtn) paypalBtn.classList.add('active');
     
     updatePaymentInstructions();
 }
@@ -439,6 +448,8 @@ function updatePaymentInstructions() {
         box.innerHTML = selectedFulfillment === 'Delivery' ? langObj.bitInstDelivery : langObj.bitInstPickup;
     } else if (selectedPayment === 'Digital' && userRegion === 'USA') {
         box.innerHTML = langObj.zelleInst;
+    } else if (selectedPayment === 'PayPal' && userRegion === 'USA') {
+        box.innerHTML = langObj.paypalInst;
     }
 }
 
@@ -464,7 +475,15 @@ function submitOrder() {
     }
 
     // Translating internal values to Hebrew for the Formspree email payload
-    const actualPaymentMethod = selectedPayment === 'Cash' ? 'מזומן' : (userRegion === 'Israel' ? 'ביט' : 'Zelle');
+    let actualPaymentMethod;
+    if (selectedPayment === 'Cash') {
+        actualPaymentMethod = 'מזומן';
+    } else if (selectedPayment === 'PayPal') {
+        actualPaymentMethod = 'PayPal';
+    } else {
+        actualPaymentMethod = userRegion === 'Israel' ? 'ביט' : 'Zelle';
+    }
+
     const actualEdition = selectedEdition === 'he' ? 'עברית' : 'רוסית';
     
     let actualFulfillment;

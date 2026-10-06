@@ -58,7 +58,7 @@ header { display: flex; justify-content: center; align-items: center; padding: 1
 textarea.form-input { resize: vertical; }
 #payment-label { color: #433829; margin: 0 0 10px 0; font-size: 1.1em; text-align: center; }
 .payment-options { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
-.pay-btn { background-color: #ffffff; color: #4a4a4a; border: 2px solid #d4c8b3; padding: 10px 20px; font-weight: 600; border-radius: 6px; width: 48%; cursor: pointer; transition: 0.2s; }
+.pay-btn { background-color: #ffffff; color: #4a4a4a; border: 2px solid #d4c8b3; padding: 10px 20px; font-weight: 600; border-radius: 6px; width: 48%; flex: 1; cursor: pointer; transition: 0.2s; }
 .pay-btn.active { background-color: #a36b5e; color: white; border-color: #a36b5e; }
 .payment-instructions { text-align: center; font-size: 1.1em; color: #5c4e3b; background: #ffffff; padding: 15px; border-radius: 6px; border: 1px dashed #d4c8b3; }
 
