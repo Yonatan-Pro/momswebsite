@@ -18,6 +18,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // State Variables 
+let currentStep = 'lang'; // 'lang', 'loc', or 'store'
 let userRegion = 'Israel';
 let userLanguage = 'he';
 let selectedEdition = 'he'; 
@@ -26,6 +27,7 @@ let selectedFulfillment = 'Delivery'; // 'Delivery' or 'Pickup'
 let orderQuantity = 1;
 let liveReviews = [];
 let reviewsListenerInitialized = false;
+let stepTransitionTimeout = null;
 
 // Pricing Constants
 const PRICE_IL = 80;
@@ -182,6 +184,130 @@ const translations = {
     }
 };
 
+// --- SESSION & BROWSER HISTORY MANAGEMENT ---
+function saveSessionState(step) {
+    currentStep = step;
+    sessionStorage.setItem('dr_step', step);
+    sessionStorage.setItem('dr_lang', userLanguage);
+    sessionStorage.setItem('dr_region', userRegion);
+}
+
+function showStepUI(step, instant = false) {
+    if (stepTransitionTimeout) {
+        clearTimeout(stepTransitionTimeout);
+        stepTransitionTimeout = null;
+    }
+
+    const splashScreen = document.getElementById('splash-screen');
+    const stepLang = document.getElementById('step-language');
+    const stepLoc = document.getElementById('step-location');
+    const mainContent = document.getElementById('main-content');
+
+    if (step === 'lang') {
+        mainContent.style.display = 'none';
+        splashScreen.style.display = 'flex';
+        splashScreen.style.opacity = '1';
+        stepLoc.classList.remove('active');
+        stepLoc.style.opacity = '0';
+        stepLang.classList.add('active');
+        stepLang.style.opacity = '1';
+    } else if (step === 'loc') {
+        mainContent.style.display = 'none';
+        splashScreen.style.display = 'flex';
+        splashScreen.style.opacity = '1';
+        stepLang.classList.remove('active');
+        stepLang.style.opacity = '0';
+        stepLoc.classList.add('active');
+        stepLoc.style.opacity = '1';
+    } else if (step === 'store') {
+        mainContent.style.display = 'block';
+        if (instant) {
+            splashScreen.style.opacity = '0';
+            splashScreen.style.display = 'none';
+        } else {
+            splashScreen.style.opacity = '0';
+            stepTransitionTimeout = setTimeout(() => {
+                splashScreen.style.display = 'none';
+            }, 450);
+        }
+    }
+}
+
+function closeAllModalsUI() {
+    const revModal = document.getElementById('reviews-modal');
+    if (revModal && revModal.style.display !== 'none') {
+        revModal.style.opacity = '0';
+        setTimeout(() => { revModal.style.display = 'none'; }, 300);
+    }
+
+    const lightbox = document.getElementById('lightbox-modal');
+    if (lightbox && lightbox.style.display !== 'none') {
+        lightbox.style.display = 'none';
+    }
+
+    const tyScreen = document.getElementById('thank-you-screen');
+    if (tyScreen && tyScreen.style.display !== 'none') {
+        tyScreen.style.opacity = '0';
+        setTimeout(() => { tyScreen.style.display = 'none'; }, 300);
+    }
+}
+
+// Listen for Browser Back / Forward buttons
+window.addEventListener('popstate', (event) => {
+    closeAllModalsUI();
+
+    const targetStep = (event.state && event.state.step) ? event.state.step : 'lang';
+    saveSessionState(targetStep);
+
+    if (targetStep === 'loc') {
+        applyLanguageUI(userLanguage);
+    } else if (targetStep === 'store') {
+        applyLanguageUI(userLanguage);
+        applyRegionUI(userRegion);
+    }
+
+    showStepUI(targetStep, true);
+});
+
+// Restore exact step on Page Refresh
+window.addEventListener('DOMContentLoaded', () => {
+    const savedStep = sessionStorage.getItem('dr_step');
+    const savedLang = sessionStorage.getItem('dr_lang');
+    const savedRegion = sessionStorage.getItem('dr_region');
+
+    if (savedLang && translations[savedLang]) {
+        userLanguage = savedLang;
+    }
+    if (savedRegion) {
+        userRegion = savedRegion;
+    }
+
+    if (savedStep === 'store') {
+        applyLanguageUI(userLanguage);
+        applyRegionUI(userRegion);
+        saveSessionState('store');
+        // Build back-stack if user opened a fresh tab with saved session
+        if (!history.state || !history.state.step) {
+            history.replaceState({ step: 'lang' }, '', '#language');
+            history.pushState({ step: 'loc' }, '', '#location');
+            history.pushState({ step: 'store' }, '', '#store');
+        }
+        showStepUI('store', true);
+    } else if (savedStep === 'loc') {
+        applyLanguageUI(userLanguage);
+        saveSessionState('loc');
+        if (!history.state || !history.state.step) {
+            history.replaceState({ step: 'lang' }, '', '#language');
+            history.pushState({ step: 'loc' }, '', '#location');
+        }
+        showStepUI('loc', true);
+    } else {
+        saveSessionState('lang');
+        history.replaceState({ step: 'lang' }, '', '#language');
+        showStepUI('lang', true);
+    }
+});
+
 // --- TOAST NOTIFICATION HELPER ---
 function showToast(message) {
     const container = document.getElementById('toast-container');
@@ -213,27 +339,23 @@ function applyLanguageUI(language) {
     document.documentElement.lang = language;
     document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
 
-    // Update Header Language Pills
     ['he', 'ru', 'en'].forEach(lang => {
         const btn = document.getElementById('nav-lang-' + lang);
         if (btn) btn.classList.toggle('active', lang === language);
     });
 
-    // Splash Screen 2 UI
     document.getElementById('splash-loc-title').innerText = langObj.locTitle;
     document.getElementById('splash-loc-sub').innerText = langObj.locSub;
     document.getElementById('splash-btn-il').innerText = langObj.btnIl;
     document.getElementById('splash-btn-us').innerText = langObj.btnUs;
     document.getElementById('splash-reviews-btn').innerText = '★ ' + langObj.reviewsBtn;
 
-    // Header & Social Proof UI
     document.getElementById('nav-logo').innerText = langObj.title;
     document.getElementById('header-reviews-label').innerText = langObj.reviewsBtn;
     document.getElementById('sp-summary-text').innerText = langObj.spSummary;
     document.getElementById('sp-cta-text').innerText = langObj.spCta;
     document.getElementById('zoom-hint-text').innerText = langObj.zoomHint;
 
-    // Store Main UI
     document.getElementById('book-badge').innerText = langObj.badge;
     document.getElementById('book-title').innerText = langObj.title;
     document.getElementById('desc-placeholder').innerHTML = langObj.description;
@@ -253,14 +375,12 @@ function applyLanguageUI(language) {
     document.getElementById('pay-cash').innerText = langObj.cash;
     document.getElementById('add-cart-btn-text').innerText = langObj.cartBtn;
 
-    // Review Modal UI
     document.getElementById('reviews-title-text').innerText = langObj.reviewsTitle;
     document.getElementById('add-review-title').innerText = langObj.addReviewTitle;
     document.getElementById('review-name').placeholder = langObj.revName;
     document.getElementById('review-text').placeholder = langObj.revText;
     document.getElementById('submit-review-btn').innerText = langObj.submitRevBtn;
 
-    // Thank You Screen UI
     document.getElementById('ty-title-text').innerText = langObj.tyTitle;
     document.getElementById('ty-msg-text').innerText = langObj.tyMsg;
     document.getElementById('ty-review-btn').innerText = langObj.tyReviewBtn;
@@ -276,12 +396,14 @@ function applyLanguageUI(language) {
 
 function setLanguage(language) {
     applyLanguageUI(language);
+    saveSessionState('loc');
+    history.pushState({ step: 'loc' }, '', '#location');
 
     const stepLang = document.getElementById('step-language');
     const stepLoc = document.getElementById('step-location');
     
     stepLang.style.opacity = '0';
-    setTimeout(() => {
+    stepTransitionTimeout = setTimeout(() => {
         stepLang.classList.remove('active');
         stepLoc.classList.add('active');
         setTimeout(() => { stepLoc.style.opacity = '1'; }, 50);
@@ -290,6 +412,7 @@ function setLanguage(language) {
 
 function switchLanguageLive(language) {
     applyLanguageUI(language);
+    saveSessionState(currentStep);
     recalculateTotals();
 }
 
@@ -297,7 +420,6 @@ function applyRegionUI(region) {
     userRegion = region;
     const langObj = translations[userLanguage];
     
-    // Update Header Region Pills
     document.getElementById('nav-reg-il').classList.toggle('active', region === 'Israel');
     document.getElementById('nav-reg-us').classList.toggle('active', region === 'USA');
 
@@ -323,17 +445,14 @@ function applyRegionUI(region) {
 
 function setRegion(region) {
     applyRegionUI(region);
-
-    const splashScreen = document.getElementById('splash-screen');
-    splashScreen.style.opacity = '0';
-    setTimeout(() => {
-        splashScreen.style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-    }, 450);
+    saveSessionState('store');
+    history.pushState({ step: 'store' }, '', '#store');
+    showStepUI('store', false);
 }
 
 function switchRegionLive(region) {
     applyRegionUI(region);
+    saveSessionState(currentStep);
 }
 
 // --- QUANTITY, FULFILLMENT & DYNAMIC PRICING ---
@@ -454,10 +573,14 @@ function openLightbox() {
     const modal = document.getElementById('lightbox-modal');
     document.getElementById('lightbox-img').src = document.getElementById('hero-img').src;
     modal.style.display = 'flex';
+    history.pushState({ step: currentStep, modal: 'lightbox' }, '', '#zoom');
 }
 
 function closeLightbox() {
     document.getElementById('lightbox-modal').style.display = 'none';
+    if (history.state && history.state.modal === 'lightbox') {
+        history.back();
+    }
 }
 
 // --- STORE OPTIONS ---
@@ -482,11 +605,21 @@ function closeThankYouScreen() {
     const tyScreen = document.getElementById('thank-you-screen');
     tyScreen.style.opacity = '0';
     setTimeout(() => { tyScreen.style.display = 'none'; }, 450);
+    if (history.state && history.state.modal === 'thankyou') {
+        history.back();
+    }
 }
 
 function openReviewFromThankYou() {
-    closeThankYouScreen();
-    openReviewsModal();
+    const tyScreen = document.getElementById('thank-you-screen');
+    tyScreen.style.opacity = '0';
+    setTimeout(() => { tyScreen.style.display = 'none'; }, 450);
+
+    const modal = document.getElementById('reviews-modal');
+    modal.style.display = 'flex';
+    setTimeout(() => { modal.style.opacity = '1'; }, 50);
+    history.replaceState({ step: currentStep, modal: 'reviews' }, '', '#reviews');
+
     setTimeout(() => {
         const addReviewSection = document.getElementById('add-review-title');
         if (addReviewSection) {
@@ -550,12 +683,16 @@ function openReviewsModal() {
     const modal = document.getElementById('reviews-modal');
     modal.style.display = 'flex';
     setTimeout(() => { modal.style.opacity = '1'; }, 50);
+    history.pushState({ step: currentStep, modal: 'reviews' }, '', '#reviews');
 }
 
 function closeReviewsModal() {
     const modal = document.getElementById('reviews-modal');
     modal.style.opacity = '0';
     setTimeout(() => { modal.style.display = 'none'; }, 450);
+    if (history.state && history.state.modal === 'reviews') {
+        history.back();
+    }
 }
 
 async function renderReviews() {
@@ -728,6 +865,7 @@ function submitOrder() {
             const tyScreen = document.getElementById('thank-you-screen');
             tyScreen.style.display = 'flex';
             setTimeout(() => { tyScreen.style.opacity = '1'; }, 50);
+            history.pushState({ step: currentStep, modal: 'thankyou' }, '', '#thank-you');
         } else {
             showToast("There was an error sending the order. Please try again.");
         }
