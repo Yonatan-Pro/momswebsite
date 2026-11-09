@@ -49,12 +49,12 @@ const translations = {
         alertError: "Please fill out your name and phone number before ordering.",
         alertErrorAddress: "Please enter your delivery address.",
         cashInst: "Pay in cash upon delivery/pickup.",
-        bitInstDelivery: "Send <strong>102 ₪</strong> (80 ₪ + 22 ₪ delivery) via Bit to: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
+        bitInstDelivery: "Send <strong>115 ₪</strong> (80 ₪ + 35 ₪ delivery) via Bit to: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
         bitInstPickup: "Send <strong>80 ₪</strong> via Bit to: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
         zelleInst: "Send <strong>$40</strong> via Zelle to: <br><strong style='font-size:1.2em;'>+1 518 466 8854</strong><br>(Lika Yakovis)",
         paypalInst: "Send <strong>$40</strong> via PayPal to: <br><strong style='font-size:1.2em;'>IamWebDev@gmail.com</strong><br>(Alexandr Yakovis)",
         fulfillmentLabel: "Delivery Option:",
-        btnDelivery: "Delivery (+22 ₪)",
+        btnDelivery: "Delivery (+35 ₪)",
         btnPickup: "Self-Pickup (Free)",
         reviewsBtn: "Reviews", 
         reviewsTitle: "Reviews",
@@ -93,12 +93,12 @@ const translations = {
         alertError: "אנא מלא/י שם ומספר טלפון לפני ביצוע ההזמנה.",
         alertErrorAddress: "אנא הזן/הזיני כתובת למשלוח.",
         cashInst: "התשלום במזומן בעת המסירה/האיסוף.",
-        bitInstDelivery: "העבר <strong>102 ₪</strong> (80 ₪ + 22 ₪ משלוח) בביט למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+972 54-538-4137</span></strong>",
+        bitInstDelivery: "העבר <strong>115 ₪</strong> (80 ₪ + 35 ₪ משלוח) בביט למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+972 54-538-4137</span></strong>",
         bitInstPickup: "העבר <strong>80 ₪</strong> בביט למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+972 54-538-4137</span></strong>",
         zelleInst: "העבר <strong>$40</strong> ב-Zelle למספר: <br><strong style='font-size:1.2em;'><span dir='ltr'>+1 518 466 8854</span></strong><br>(Lika Yakovis)",
         paypalInst: "העבר <strong>$40</strong> ב-PayPal לאימייל: <br><strong style='font-size:1.2em;'><span dir='ltr'>IamWebDev@gmail.com</span></strong><br>(Alexandr Yakovis)",
         fulfillmentLabel: "אפשרות קבלה:",
-        btnDelivery: "משלוח (22+ ₪)",
+        btnDelivery: "משלוח (35+ ₪)",
         btnPickup: "איסוף עצמי (חינם)",
         reviewsBtn: "ביקורות", 
         reviewsTitle: "ביקורות",
@@ -137,12 +137,12 @@ const translations = {
         alertError: "Пожалуйста, введите ваше имя и телефон перед заказом.",
         alertErrorAddress: "Пожалуйста, укажите адрес доставки.",
         cashInst: "Оплата наличными при доставке/самовывозе.",
-        bitInstDelivery: "Отправьте <strong>102 ₪</strong> (80 ₪ + 22 ₪ доставка) через Bit на номер: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
+        bitInstDelivery: "Отправьте <strong>115 ₪</strong> (80 ₪ + 35 ₪ доставка) через Bit на номер: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
         bitInstPickup: "Отправьте <strong>80 ₪</strong> через Bit на номер: <br><strong style='font-size:1.2em;'>+972 54-538-4137</strong>",
         zelleInst: "Отправьте <strong>$40</strong> через Zelle на номер: <br><strong style='font-size:1.2em;'>+1 518 466 8854</strong><br>(Lika Yakovis)",
         paypalInst: "Отправьте <strong>$40</strong> через PayPal на почту: <br><strong style='font-size:1.2em;'>IamWebDev@gmail.com</strong><br>(Alexandr Yakovis)",
         fulfillmentLabel: "Способ получения:",
-        btnDelivery: "Доставка (+22 ₪)",
+        btnDelivery: "Доставка (+35 ₪)",
         btnPickup: "Самовывоз (Бесплатно)",
         reviewsBtn: "Отзывы", 
         reviewsTitle: "Отзывы",
@@ -258,7 +258,7 @@ function selectFulfillment(option) {
     if (option === 'Delivery') {
         delBtn.classList.add('active');
         pickBtn.classList.remove('active');
-        document.getElementById('final-price').innerText = '102 ₪';
+        document.getElementById('final-price').innerText = '115 ₪'; // Updated calculation
         addressInput.placeholder = langObj.addressPlaceholder;
         addressInput.disabled = false;
     } else {
@@ -474,7 +474,6 @@ function submitOrder() {
         return;
     }
 
-    // Translating internal values to Hebrew for the Formspree email payload
     let actualPaymentMethod;
     if (selectedPayment === 'Cash') {
         actualPaymentMethod = 'מזומן';
