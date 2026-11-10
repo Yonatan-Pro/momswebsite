@@ -674,11 +674,12 @@ textarea.form-input {
 
 /* --- Reviews Modal Styling --- */
 .reviews-modal-box {
-    max-width: 580px;
+    max-width: 600px;
+    height: 85vh;
     max-height: 88vh;
     display: flex;
     flex-direction: column;
-    padding: 32px 28px;
+    padding: 30px 28px;
 }
 
 .reviews-modal-header {
@@ -687,6 +688,7 @@ textarea.form-input {
     justify-content: center;
     gap: 12px;
     margin-bottom: 18px;
+    flex-shrink: 0;
 }
 
 .reviews-summary-pill {
@@ -703,15 +705,21 @@ textarea.form-input {
 .reviews-list-container {
     overflow-y: auto;
     text-align: left;
-    padding-right: 4px;
-    margin-bottom: 20px;
+    padding-right: 6px;
+    margin-bottom: 16px;
     flex: 1;
 }
 
 [dir="rtl"] .reviews-list-container {
     text-align: right;
     padding-right: 0;
-    padding-left: 4px;
+    padding-left: 6px;
+}
+
+.open-review-form-bar {
+    padding-top: 12px;
+    border-top: 1px solid var(--border-soft);
+    flex-shrink: 0;
 }
 
 .close-modal-btn {
@@ -795,21 +803,45 @@ textarea.form-input {
     color: var(--text-main);
 }
 
-/* Interactive Star Picker */
+/* Collapsible Add Review Form */
 .add-review-section {
-    border-top: 2px dashed var(--border-soft);
-    padding-top: 16px;
+    padding-top: 10px;
     text-align: left;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 [dir="rtl"] .add-review-section {
     text-align: right;
 }
 
+.add-review-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.cancel-review-btn {
+    background: var(--card-warm);
+    color: var(--text-muted);
+    border: 1px solid var(--border-soft);
+    padding: 6px 14px;
+    font-size: 0.9em;
+    border-radius: 6px;
+}
+
+.cancel-review-btn:hover {
+    background: #ebe3d3;
+    color: var(--text-main);
+}
+
 .star-picker {
     display: flex;
     gap: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .star-pick-btn {
@@ -875,6 +907,9 @@ textarea.form-input {
     }
     .splash-modal {
         padding: 28px 18px !important;
+    }
+    .reviews-modal-box {
+        height: 88vh !important;
     }
     .review-box {
         padding: 14px !important;

@@ -70,6 +70,7 @@ const translations = {
         spCta: "Click to read or leave a review →",
         zoomHint: "🔍 Click to enlarge",
         addReviewTitle: "Add a Review",
+        cancelRevBtn: "← Back to Reviews",
         revName: "Your Name",
         revText: "Write your review here...",
         submitRevBtn: "Submit Review",
@@ -119,6 +120,7 @@ const translations = {
         spCta: "לחצו לקריאה או להוספת ביקורת ←",
         zoomHint: "🔍 לחצו להגדלה",
         addReviewTitle: "הוסף ביקורת",
+        cancelRevBtn: "חזרה לביקורות →",
         revName: "השם שלך",
         revText: "כתוב את הביקורת שלך כאן...",
         submitRevBtn: "שלח ביקורת",
@@ -168,6 +170,7 @@ const translations = {
         spCta: "Нажмите, чтобы прочитать или оставить отзыв →",
         zoomHint: "🔍 Нажмите для увеличения",
         addReviewTitle: "Оставить отзыв",
+        cancelRevBtn: "← Назад к отзывам",
         revName: "Ваше имя",
         revText: "Напишите свой отзыв здесь...",
         submitRevBtn: "Отправить отзыв",
@@ -286,7 +289,6 @@ window.addEventListener('DOMContentLoaded', () => {
         applyLanguageUI(userLanguage);
         applyRegionUI(userRegion);
         saveSessionState('store');
-        // Build back-stack if user opened a fresh tab with saved session
         if (!history.state || !history.state.step) {
             history.replaceState({ step: 'lang' }, '', '#language');
             history.pushState({ step: 'loc' }, '', '#location');
@@ -376,7 +378,9 @@ function applyLanguageUI(language) {
     document.getElementById('add-cart-btn-text').innerText = langObj.cartBtn;
 
     document.getElementById('reviews-title-text').innerText = langObj.reviewsTitle;
+    document.getElementById('open-add-review-btn').innerText = '+ ' + langObj.addReviewTitle;
     document.getElementById('add-review-title').innerText = langObj.addReviewTitle;
+    document.getElementById('cancel-review-btn').innerText = langObj.cancelRevBtn;
     document.getElementById('review-name').placeholder = langObj.revName;
     document.getElementById('review-text').placeholder = langObj.revText;
     document.getElementById('submit-review-btn').innerText = langObj.submitRevBtn;
@@ -615,17 +619,11 @@ function openReviewFromThankYou() {
     tyScreen.style.opacity = '0';
     setTimeout(() => { tyScreen.style.display = 'none'; }, 450);
 
+    toggleReviewForm(true);
     const modal = document.getElementById('reviews-modal');
     modal.style.display = 'flex';
     setTimeout(() => { modal.style.opacity = '1'; }, 50);
     history.replaceState({ step: currentStep, modal: 'reviews' }, '', '#reviews');
-
-    setTimeout(() => {
-        const addReviewSection = document.getElementById('add-review-title');
-        if (addReviewSection) {
-            addReviewSection.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, 500);
 }
 
 // --- AUTO-TRANSLATION FUNCTION ---
@@ -642,6 +640,26 @@ async function translateText(text, targetLang) {
 }
 
 // --- FIRESTORE REAL-TIME REVIEWS LOGIC ---
+function toggleReviewForm(showForm) {
+    const listEl = document.getElementById('reviews-list');
+    const openBarEl = document.getElementById('open-review-form-bar');
+    const formSectionEl = document.getElementById('add-review-section');
+
+    if (showForm) {
+        listEl.style.display = 'none';
+        openBarEl.style.display = 'none';
+        formSectionEl.style.display = 'flex';
+        setTimeout(() => {
+            const nameInput = document.getElementById('review-name');
+            if (nameInput) nameInput.focus();
+        }, 100);
+    } else {
+        formSectionEl.style.display = 'none';
+        listEl.style.display = 'block';
+        openBarEl.style.display = 'block';
+    }
+}
+
 function setReviewStars(count) {
     document.getElementById('review-stars').value = count;
     const buttons = document.querySelectorAll('#star-picker .star-pick-btn');
@@ -680,6 +698,7 @@ function initLiveReviewsListener() {
 }
 
 function openReviewsModal() {
+    toggleReviewForm(false);
     const modal = document.getElementById('reviews-modal');
     modal.style.display = 'flex';
     setTimeout(() => { modal.style.opacity = '1'; }, 50);
@@ -764,6 +783,7 @@ function submitReview() {
         document.getElementById('review-text').value = '';
         setReviewStars(5);
         submitBtn.disabled = false;
+        toggleReviewForm(false);
         showToast(langObj.revSuccess);
     })
     .catch((error) => {

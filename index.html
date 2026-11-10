@@ -206,12 +206,20 @@
                 </div>
             </div>
             
-            <!-- Scrollable Reviews List -->
+            <!-- Scrollable Reviews List (Visible by Default) -->
             <div id="reviews-list" class="reviews-list-container"></div>
 
-            <!-- Add Review Form -->
-            <div class="add-review-section">
-                <h3 id="add-review-title" style="margin: 0 0 12px 0;">Add a Review</h3>
+            <!-- Bottom Bar to Open Add Review Form -->
+            <div id="open-review-form-bar" class="open-review-form-bar">
+                <button type="button" class="primary-btn" id="open-add-review-btn" onclick="toggleReviewForm(true)" style="width: 100%;">+ Add a Review</button>
+            </div>
+
+            <!-- Add Review Form (Hidden until clicked) -->
+            <div class="add-review-section" id="add-review-section" style="display: none;">
+                <div class="add-review-top-row">
+                    <h3 id="add-review-title" style="margin: 0;">Add a Review</h3>
+                    <button type="button" class="cancel-review-btn" id="cancel-review-btn" onclick="toggleReviewForm(false)">Cancel</button>
+                </div>
                 
                 <!-- Interactive Star Picker -->
                 <div class="star-picker" id="star-picker">
@@ -224,7 +232,7 @@
                 <input type="hidden" id="review-stars" value="5">
 
                 <input type="text" id="review-name" class="form-input" placeholder="Your Name" style="margin-bottom: 10px;">
-                <textarea id="review-text" class="form-input" placeholder="Write your review here..." rows="3"></textarea>
+                <textarea id="review-text" class="form-input" placeholder="Write your review here..." rows="4"></textarea>
                 <button type="button" class="primary-btn" id="submit-review-btn" onclick="submitReview()" style="width: 100%;">Submit Review</button>
             </div>
         </div>
